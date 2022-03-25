@@ -6,9 +6,11 @@ let Token, token, keyPair, keyPair2, Wallet, wallet
 
 describe('Token contract', async function () {
   describe('Contracts', async function () {
-    beforeEach(async function () {
-      ;[keyPair, keyPair2] = await locklift.keys.getKeyPairs()
-
+    beforeAll(async function () {
+      this.timeout(20000)
+      const keyList = await locklift.keys.getKeyPairs()
+      keyPair = keyList[0]
+      keyPair2 = keyList[1]
       Wallet = await locklift.factory.getContract('Wallet')
       Token = await locklift.factory.getContract('Root')
       token = await locklift.giver.deployContract({
