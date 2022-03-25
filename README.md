@@ -1,4 +1,4 @@
-# Venom contracts
+# Locklift project
 
 _[Locklift](https://github.com/broxus/ton-locklift) project from a proposed [template](https://github.com/EverscaleGuild/locklift-sample)_
 
