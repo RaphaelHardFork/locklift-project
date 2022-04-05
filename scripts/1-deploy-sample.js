@@ -1,28 +1,24 @@
-const getRandomNonce = () => Math.random() * 64000 | 0;
-
+/* eslint-disable space-before-function-paren */
 
 async function main() {
-  const Sample = await locklift.factory.getContract('Sample');
-  const [keyPair] = await locklift.keys.getKeyPairs();
-  
-  const sample = await locklift.giver.deployContract({
-    contract: Sample,
-    constructorParams: {
-      _state: 123
-    },
+  const Token = await locklift.factory.getContract('TokenRoot')
+  const Wallet = await locklift.factory.getContract('TokenWallet')
+  const [keyPair] = await locklift.keys.getKeyPairs()
+
+  const token = await locklift.giver.deployContract({
+    contract: Token,
     initParams: {
-      _nonce: getRandomNonce(),
+      wallet_code: Wallet.code,
     },
     keyPair,
-  });
-  
-  console.log(`Sample deployed at: ${sample.address}`);
-}
+  })
 
+  console.log(`Token deployed at: ${token.address}`)
+}
 
 main()
   .then(() => process.exit(0))
-  .catch(e => {
-    console.log(e);
-    process.exit(1);
-  });
+  .catch((e) => {
+    console.log(e)
+    process.exit(1)
+  })

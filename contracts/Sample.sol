@@ -2,33 +2,27 @@ pragma ton-solidity ^0.58.2;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
-
 contract Sample {
     uint16 static _nonce;
-    
-    uint state;
 
-    event StateChange(uint _state);
+    uint256 state;
 
-    constructor(uint _state) public {
+    event StateChange(uint256 _state);
+
+    constructor(uint256 _state) public {
         tvm.accept();
 
         setState(_state);
     }
 
-    function setState(uint _state) public {
+    function setState(uint256 _state) public {
         tvm.accept();
         state = _state;
 
         emit StateChange(_state);
     }
 
-    function getDetails()
-        external
-        view
-    returns (
-        uint _state
-    ) {
+    function getDetails() external view returns (uint256 _state) {
         return state;
     }
 
