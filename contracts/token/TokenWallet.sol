@@ -70,7 +70,7 @@ contract TokenWallet is ITokenWallet {
         // We calculate the destination address of the wallet contract.
         TvmCell stateInit = tvm.buildStateInit({
             contr: TokenWallet,
-            varInit: {root_address:root_address,wallet_code:wallet_code},
+            varInit: {root_address: root_address, wallet_code: wallet_code},
             pubkey: _recipient_public_key,
             code: wallet_code
         });
@@ -134,10 +134,10 @@ contract TokenWallet is ITokenWallet {
         }
     }
 
-    function getExpectedAddress(uint256 _wallet_public_key) private inline view returns (address) {
+    function getExpectedAddress(uint256 _wallet_public_key) public view returns (address) {
         TvmCell stateInit = tvm.buildStateInit({
             contr: TokenWallet,
-            varInit: {root_address:root_address,wallet_code:wallet_code},
+            varInit: {root_address: root_address, wallet_code: wallet_code},
             pubkey: _wallet_public_key,
             code: wallet_code
         });

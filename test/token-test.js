@@ -1,8 +1,18 @@
+/* eslint-disable comma-dangle */
 /* eslint-disable mocha-no-only/mocha-no-only */
 /* eslint-disable camelcase */
 const { expect } = require('chai')
 
-let Token, token, keyPair, keyPair2, Wallet, wallet, Account, account
+let Token,
+  token,
+  keyPair,
+  keyPair2,
+  keyPair3,
+  Wallet,
+  walletAddr,
+  walletAddr2,
+  Account,
+  account
 
 describe('Token contract', () => {
   describe('Contracts', () => {
@@ -13,6 +23,7 @@ describe('Token contract', () => {
       const keyList = await locklift.keys.getKeyPairs()
       keyPair = keyList[0]
       keyPair2 = keyList[1]
+      keyPair3 = keyList[2]
 
       // --- Account.sol ---
       Account = await locklift.factory.getAccount('Account')
@@ -26,10 +37,9 @@ describe('Token contract', () => {
       account.setKeyPair(keyPair)
       account.name = 'Owner'
 
-      // --- contracts ---
+      // --- deploy token contracts ---
       Token = await locklift.factory.getContract('TokenRoot')
       Wallet = await locklift.factory.getContract('TokenWallet')
-      console.log(Wallet.code)
 
       token = await locklift.giver.deployContract({
         contract: Token,
@@ -39,33 +49,41 @@ describe('Token contract', () => {
         keyPair,
       })
 
-      console.log((await locklift.ton.getBalance(account.address)).toString())
-      console.log((await locklift.ton.getBalance(token.address)).toString())
-      // console.log(await locklift.ton.getBalance(`0x${keyPair.public}`))
-      // console.log(await locklift.ton.getBalance(`0x${keyPair2.public}`))
-      // console.log(locklift.ton.getBalance(keyPair.public))
-      // console.log(locklift.ton.getBalance(keyPair.public))
-      console.log('DEPLOYED')
+      // --- fill token contract ---
+      await account.run({
+        method: 'sendTransaction',
+        params: {
+          dest: token.address,
+          value: 4500000000,
+          bounce: true,
+          flags: 1,
+          payload: 'te6ccgEBAQEAAgAAAA==',
+        },
+      })
 
       // --- deploy wallet ---
-      await token.run({
-        method: 'deployEmptyWallet',
+      let tx = await token.run({
+        method: 'deployWalletWithBalance',
         params: {
-          answerID: '1',
           _wallet_public_key: `0x${keyPair.public}`,
-          _deploy_evers: '1',
+          _deploy_evers: '1000000000',
+          _tokens: '20000',
         },
         keyPair: keyPair,
       })
-      // await account.runTarget({
-      //   contract: token,
-      //   method: 'deployEmptyWallet',
-      //   params: {
-      //     _wallet_public_key: `0x${keyPair.public}`,
-      //     _deploy_evers: '1',
-      //   },
-      //   value: '100',
-      // })
+      walletAddr = tx.decoded.output.value0
+
+      // --- deploy wallet 2 ---
+      tx = await token.run({
+        method: 'deployWalletWithBalance',
+        params: {
+          _wallet_public_key: `0x${keyPair2.public}`,
+          _deploy_evers: '1000000000',
+          _tokens: '30000',
+        },
+        keyPair: keyPair,
+      })
+      walletAddr2 = tx.decoded.output.value0
     })
 
     it('Load contract factory & deploy contract', async function () {
@@ -77,8 +95,100 @@ describe('Token contract', () => {
         .and.satisfy((s) => s.startsWith('0:'), 'Bad future address')
     })
 
-    // it('should deploy token wallet', async () => {
-    //   const pubkey = `0x${keyPair}`
+    it('should deploy token wallet', async () => {
+      Wallet.setAddress(walletAddr)
+      expect((await Wallet.call({ method: 'getBalance' })).toString()).to.equal(
+        '20000'
+      )
+      Wallet.setAddress(walletAddr2)
+      expect((await Wallet.call({ method: 'getBalance' })).toString()).to.equal(
+        '30000'
+      )
+    })
+
+    it('should transfer token', async () => {
+      await Wallet.run({
+        method: 'transferToRecipient',
+        params: {
+          _recipient_public_key: `0x${keyPair.public}`,
+          _tokens: 5000,
+          _deploy_evers: 100000000,
+          _transfer_evers: 100000000,
+        },
+        keyPair: keyPair2,
+      })
+
+      expect((await Wallet.call({ method: 'getBalance' })).toString()).to.equal(
+        '25000'
+      )
+      Wallet.setAddress(walletAddr)
+      expect((await Wallet.call({ method: 'getBalance' })).toString()).to.equal(
+        '25000'
+      )
+    })
+
+    it('should create token wallet on the fly', async () => {
+      await Wallet.run({
+        method: 'transferToRecipient',
+        params: {
+          _recipient_public_key: `0x${keyPair3.public}`,
+          _tokens: 5000,
+          _deploy_evers: 100000000,
+          _transfer_evers: 100000000,
+        },
+        keyPair: keyPair,
+      })
+
+      const walletAddr3 = await Wallet.call({
+        method: 'getExpectedAddress',
+        params: { _wallet_public_key: `0x${keyPair3.public}` },
+      })
+      Wallet.setAddress(walletAddr3)
+
+      expect((await Wallet.call({ method: 'getBalance' })).toString()).to.equal(
+        '5000'
+      )
+    })
+
+    it('should create wallet by internal call', async () => {
+      // await account.runTarget({ DO NOT WORK
+      //   contract: token,
+      //   method: 'mint',
+      //   params: {
+      //     _to: walletAddr,
+      //     _tokens: '35000',
+      //   },
+      // })
+      await token.run({
+        method: 'mint',
+        params: {
+          _to: walletAddr,
+          _tokens: '40000',
+        },
+        keyPair: keyPair,
+      })
+      Wallet.setAddress(walletAddr)
+
+      expect((await Wallet.call({ method: 'getBalance' })).toString()).to.equal(
+        '60000'
+      )
+    })
+
+    // --- read ---
+    // const response = await token.call({
+    //   method: 'total_supply',
+    //   params: {},
+    // })
+    // console.log('total supply', response.toString())
+
+    // await account.runTarget({
+    //   contract: token,
+    //   method: 'deployEmptyWallet',
+    //   params: {
+    //     _wallet_public_key: `0x${keyPair.public}`,
+    //     _deploy_evers: '1',
+    //   },
+    //   value: '100',
     // })
 
     //  console.log((await locklift.ton.getBalance(token.address)).toString())
@@ -98,16 +208,6 @@ describe('Token contract', () => {
     //   console.log(e)
     // }
     // ---
-
-    // --- read ---
-    // const response = await token.call({
-    //   method: 'deployWallet',
-    //   params: {
-    //     _wallet_public_key: `0x${keyPair.public}`,
-    //     _deploy_evers: '1',
-    //   },
-    // })
-    // console.log(response)
 
     // const startBalance = await token.call({ method: 'start_gas_balance' })
     // console.log(startBalance.toString())

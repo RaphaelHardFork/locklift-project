@@ -41,6 +41,8 @@ describe('Test Sample contract', async function () {
         params: { _state: 111 },
       })
 
+      // console.log(await sample.call({ method: 'viewTvmCell', params: {} }))
+
       const response = await sample.call({
         method: 'getDetails',
         params: {},

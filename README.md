@@ -36,3 +36,5 @@ TVM description: https://test.ton.org/tvm.pdf
 Solidity compiler (last 0.58.2): https://github.com/tonlabs/TON-Solidity-Compiler
 
 VSCode extension for TON-Solidity: https://marketplace.visualstudio.com/items?itemName=everscale.solidity-support
+
+Guide to Ton development: https://mnill.github.io/everscale-for-solidity-dev/
