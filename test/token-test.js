@@ -173,4 +173,5 @@ describe('Token contract', () => {
         '60000'
       )
     })
+  })
 })
