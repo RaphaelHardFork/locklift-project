@@ -3,6 +3,10 @@
 /* eslint-disable camelcase */
 const { expect } = require('chai')
 
+const afterRun = async (tx) => {
+  await new Promise((resolve) => setTimeout(resolve, 3000))
+}
+
 let Token,
   token,
   keyPair,
@@ -14,11 +18,11 @@ let Token,
   Account,
   account
 
-describe('Token contract', () => {
-  describe('Contracts', () => {
+describe('Token contract', async function () {
+  this.timeout(50000)
+  describe('Contracts', async function () {
     // --- SETUP ---
     before(async function () {
-      this.timeout(20000)
       // --- users ---
       const keyList = await locklift.keys.getKeyPairs()
       keyPair = keyList[0]
@@ -150,15 +154,22 @@ describe('Token contract', () => {
       )
     })
 
-    it('should create wallet by internal call', async () => {
-      // await account.runTarget({ DO NOT WORK
+    it('should mint by internal call', async () => {
+      console.log((await locklift.ton.getBalance(account.address)).toString())
+      console.log((await locklift.ton.getBalance(token.address)).toString())
+
+      // account.afterRun = afterRun
+      // const tx = await account.runTarget({
       //   contract: token,
       //   method: 'mint',
       //   params: {
       //     _to: walletAddr,
       //     _tokens: '35000',
       //   },
+      //   value: '1000000000',
       // })
+      // account.afterRun()
+
       await token.run({
         method: 'mint',
         params: {
@@ -167,11 +178,26 @@ describe('Token contract', () => {
         },
         keyPair: keyPair,
       })
+
       Wallet.setAddress(walletAddr)
 
       expect((await Wallet.call({ method: 'getBalance' })).toString()).to.equal(
         '60000'
       )
+    })
+
+    it('should call responsible function', async () => {
+      await account.runTarget({
+        contract: token,
+        method: 'deployEmptyWallet',
+        params: {
+          // answerID: '0x12345678',
+          _recipient_public_key: `0x${keyPair3.public}`,
+          _deploy_evers: 100000000,
+        },
+        value: locklift.utils.convertCrystal(3, 'nano'),
+        keyPair: keyPair,
+      })
     })
   })
 })
