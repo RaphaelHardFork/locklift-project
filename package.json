@@ -23,9 +23,9 @@
     "postinstall": "yarn everdev-setup",
     "local-reset": "everdev se reset",
     "everdev-setup": "everdev sol set --compiler 0.58.2 --linker 0.14.39",
-    "compile": "locklift build --config locklift.config.js",
     "contract-deploy-local": "locklift run --config locklift.config.js --network local --script scripts/1-deploy-sample.js",
     "contract-test": "yarn local-reset && locklift test --config locklift.config.js --network local",
+    "compile": "locklift build --config locklift.config.js",
     "test": "yarn contract-test"
   },
   "engines": {

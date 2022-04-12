@@ -41,6 +41,7 @@ describe('Test Sample contract', async function () {
         params: { _state: 111 },
       })
 
+      // to see what an empty cell look like
       // console.log(await sample.call({ method: 'viewTvmCell', params: {} }))
 
       const response = await sample.call({

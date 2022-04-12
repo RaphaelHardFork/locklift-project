@@ -3,10 +3,6 @@
 /* eslint-disable camelcase */
 const { expect } = require('chai')
 
-const afterRun = async (tx) => {
-  await new Promise((resolve) => setTimeout(resolve, 3000))
-}
-
 let Token,
   token,
   keyPair,
@@ -23,7 +19,7 @@ describe('Token contract', async function () {
   describe('Contracts', async function () {
     // --- SETUP ---
     before(async function () {
-      // --- users ---
+      // --- users keypairs ---
       const keyList = await locklift.keys.getKeyPairs()
       keyPair = keyList[0]
       keyPair2 = keyList[1]
@@ -43,7 +39,7 @@ describe('Token contract', async function () {
 
       // --- deploy token contracts ---
       Token = await locklift.factory.getContract('TokenRoot')
-      Wallet = await locklift.factory.getContract('TokenWallet')
+      Wallet = await locklift.factory.getContract('TokenWallet') // deployed by TokenRoot
 
       token = await locklift.giver.deployContract({
         contract: Token,
@@ -154,21 +150,10 @@ describe('Token contract', async function () {
       )
     })
 
-    it('should mint by internal call', async () => {
-      console.log((await locklift.ton.getBalance(account.address)).toString())
-      console.log((await locklift.ton.getBalance(token.address)).toString())
-
-      // account.afterRun = afterRun
-      // const tx = await account.runTarget({
-      //   contract: token,
-      //   method: 'mint',
-      //   params: {
-      //     _to: walletAddr,
-      //     _tokens: '35000',
-      //   },
-      //   value: '1000000000',
-      // })
-      // account.afterRun()
+    it('should mint token', async () => {
+      const totalSupply = (
+        await token.call({ method: 'total_supply' })
+      ).toString()
 
       await token.run({
         method: 'mint',
@@ -179,22 +164,88 @@ describe('Token contract', async function () {
         keyPair: keyPair,
       })
 
-      Wallet.setAddress(walletAddr)
+      expect(
+        (await token.call({ method: 'total_supply' })).toNumber()
+      ).to.equal(Number(totalSupply) + 40000)
+    })
 
-      expect((await Wallet.call({ method: 'getBalance' })).toString()).to.equal(
-        '60000'
+    it('should mint by internal message', async () => {
+      const totalSupply = (
+        await token.call({ method: 'total_supply' })
+      ).toNumber()
+
+      // external message
+      await token.run({
+        method: 'mint',
+        params: {
+          _to: walletAddr,
+          _tokens: '40000',
+        },
+        keyPair: keyPair,
+      })
+
+      expect(
+        (await token.call({ method: 'total_supply' })).toNumber(),
+        'Minted by external message'
+      ).to.equal(totalSupply + 40000)
+
+      // internal message
+      await account.runTarget({
+        contract: token,
+        method: 'mint',
+        params: {
+          _to: walletAddr,
+          _tokens: '40000',
+        },
+        value: locklift.utils.convertCrystal(3, 'nano'),
+        keyPair: keyPair,
+      })
+
+      expect(
+        (await token.call({ method: 'total_supply' })).toNumber(),
+        'Minted by internal message'
+      ).to.equal(totalSupply + 40000 + 40000)
+    })
+
+    it('should not mint if not owner', async () => {
+      // external message
+      await expect(
+        token.run({
+          method: 'mint',
+          params: {
+            _to: walletAddr,
+            _tokens: '40000',
+          },
+          keyPair: keyPair2,
+        }),
+        'ext message'
+      )
+
+      // internal message
+      await expect(
+        account.runTarget({
+          contract: token,
+          method: 'mint',
+          params: {
+            _to: walletAddr,
+            _tokens: '40000',
+          },
+          value: locklift.utils.convertCrystal(3, 'nano'),
+          keyPair: keyPair2,
+        }),
+        'int message'
       )
     })
 
     it('should call responsible function', async () => {
-      await account.runTarget({
-        contract: token,
+      await token.run({
         method: 'deployEmptyWallet',
         params: {
-          // answerID: '0x12345678',
+          answerID: '0x12345678',
           _recipient_public_key: `0x${keyPair3.public}`,
           _deploy_evers: 100000000,
         },
+
         value: locklift.utils.convertCrystal(3, 'nano'),
         keyPair: keyPair,
       })
