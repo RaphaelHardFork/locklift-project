@@ -251,6 +251,35 @@ Contract.setAddress(contractAddress);
 const balance = (await locklift.ton.getBalance(contract.address)).toString();
 ```
 
+### Test a revert
+
+There is no way to test a revert like with hardhat so you can use a `try/catch` statement:
+
+```js
+let message = "transaction passed";
+try {
+  // internal message
+  await account.runTarget({
+    contract: token,
+    method: "mint",
+    params: {
+      _to: walletAddr,
+      _tokens: "40000",
+    },
+    value: 1500000000,
+    keyPair: keyPair2,
+  });
+} catch (e) {
+  message = e.message;
+}
+
+expect(message).to.equal(
+  "Contract execution was terminated with error: Compute phase isn't succeeded, exit code: 1101.\n" +
+    "Possible reason: Contract did not accept message.\n" +
+    "Tip: For more information about exit code check the contract source code or ask the contract developer"
+);
+```
+
 ### Using `Account.sol`
 
 You can use [Account.sol](https://github.com/broxus/ton-contracts/blob/master/contracts/wallets/Account.sol) to:
@@ -304,7 +333,7 @@ await account.run({
 **SEND INTERNAL MESSAGE:**  
 You can send internal message to contract with Account.sol, use the `.runTarget()` method.
 
-Problem: doing a call with this method seem to not affect the contract state
+Problem: sometime doing a call with this method seem not affect the contract state
 
 ```js
 await account.runTarget({
@@ -320,3 +349,13 @@ await account.runTarget({
   keyPair: keyPair,
 });
 ```
+
+### Responsible functions
+
+> Our function is labelled responsible, this means that it is possible to be called with a smart contract and it will create a message with a callback. The compiler will simply add a field to the function arguments answerID, which shows the ID of the function that will be called by sending a message back to the msg.sender address.
+
+> Why do we use 128 here and not 64 - because from this transaction we have two external calls, one is to deploy the wallet contract, and the second is the answer: responsible. You can find more details about this in the "Carefully working with value" section.
+
+Calling "responsible" functions not work in tests, result always in:
+
+`Create run message failed: Wrong data format: null`

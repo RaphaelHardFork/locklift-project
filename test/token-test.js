@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 /* eslint-disable comma-dangle */
 /* eslint-disable mocha-no-only/mocha-no-only */
 /* eslint-disable camelcase */
@@ -208,36 +209,32 @@ describe('Token contract', async function () {
     })
 
     it('should not mint if not owner', async () => {
-      // external message
-      await expect(
-        token.run({
-          method: 'mint',
-          params: {
-            _to: walletAddr,
-            _tokens: '40000',
-          },
-          keyPair: keyPair2,
-        }),
-        'ext message'
-      )
-
-      // internal message
-      await expect(
-        account.runTarget({
+      let message = 'transaction passed'
+      try {
+        // internal message
+        await account.runTarget({
           contract: token,
           method: 'mint',
           params: {
             _to: walletAddr,
             _tokens: '40000',
           },
-          value: locklift.utils.convertCrystal(3, 'nano'),
+          value: 1500000000,
           keyPair: keyPair2,
-        }),
-        'int message'
+        })
+      } catch (e) {
+        message = e.message
+      }
+
+      expect(message).to.equal(
+        "Contract execution was terminated with error: Compute phase isn't succeeded, exit code: 1101.\n" +
+          'Possible reason: Contract did not accept message.\n' +
+          'Tip: For more information about exit code check the contract source code or ask the contract developer'
       )
     })
 
     it('should call responsible function', async () => {
+      // calling responsible functions? always get wrong data format error
       await token.run({
         method: 'deployEmptyWallet',
         params: {
