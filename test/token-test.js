@@ -204,7 +204,7 @@ describe('Token contract', async function () {
 
       expect(
         (await token.call({ method: 'total_supply' })).toNumber(),
-        'Minted by internal message'
+        'Minted by internal message: seem to not work because of onlyOwner'
       ).to.equal(totalSupply + 40000 + 40000)
     })
 

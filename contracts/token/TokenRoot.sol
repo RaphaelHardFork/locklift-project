@@ -95,10 +95,7 @@ contract TokenRoot is ITokenRoot {
             deployed_contract;
     }
 
-    function mint(
-        address _to,
-        uint128 _tokens /*onlyOwner*/
-    ) external override {
+    function mint(address _to, uint128 _tokens) external override onlyOwner {
         // This method is called by an external message,
         // here we have put some fool-proof protection in place.
         // This way we will pay for the fulfillment of the transaction from the contract account,
