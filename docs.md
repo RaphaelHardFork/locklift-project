@@ -124,7 +124,35 @@ everdev contract deploy helloWorld
 everdev contract info helloWorld (check if deployed)
 ```
 
+## Interact with the contract
+
+There are two way of interacting with the contract:
+
+- `run`: execute method
+- `run-local`: read contract state
+
+To work you need the ABI file, and parameters to get the address, so either:
+
+- the address directly specified by `-a address`
+- signer pubkey and initialData (this will calculate the address)
+
+```zsh
+everdev contract run-local helloWorld -a 0:address...
+```
+
+Try `5) timestamp`
+
+Then you can change this value by calling `touch`, as it's a write function you need to pass the `run` command:
+
+```zsh
+everdev contract run helloWorld -a:address...
+```
+
+Now you can see that the timestamp on the contract has change.
+
 # Use TONOS-CLI
+
+_For now I don't an improvment to use tonos-cli, I think it's better to focus on **locklift**_
 
 ## Installation
 
