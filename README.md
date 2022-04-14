@@ -351,6 +351,39 @@ Calling "responsible" functions not work in tests, result always in:
 
 `Create run message failed: Wrong data format: null`
 
+## Configure Signer and Giver for deploying with script
+
+Create a new signer with `everdev` cli:
+
+```zsh
+everdev signer generate signerName -m
 ```
 
+`-m` you use a mnemonic seed phrase, you can get this phrase with:
+
+```zsh
+everdev signer info signerName
+```
+
+Save this phrase in your `.env` file and use it in `locklift.config.js`:
+
+_You must install with `yarn add dotenv`_
+
+```js
+require("dotenv").config();
+
+const SEED = process.env.SEED_PHRASE;
+
+module.exports = {
+  {...},
+  networks: {
+    dev: {
+      {...},
+      keys: {
+        phrase: SEED,
+        amount: 1,
+      },
+    },
+  },
+};
 ```

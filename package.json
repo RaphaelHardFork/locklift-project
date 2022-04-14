@@ -23,7 +23,8 @@
     "postinstall": "yarn everdev-setup",
     "local-reset": "everdev se reset",
     "everdev-setup": "everdev sol set --compiler 0.58.2 --linker 0.14.39",
-    "contract-deploy-local": "locklift run --config locklift.config.js --network local --script scripts/1-deploy-sample.js",
+    "deploy-local": "locklift run --config locklift.config.js --network local --script scripts/1-deploy-sample.js",
+    "deploy-testnet": "locklift run --config locklift.config.js --network dev --script scripts/1-deploy-sample.js",
     "contract-test": "yarn local-reset && locklift test --config locklift.config.js --network local",
     "compile": "locklift build --config locklift.config.js",
     "test": "yarn contract-test"
@@ -33,8 +34,6 @@
   },
   "devDependencies": {
     "chai": "^4.3.6",
-    "everdev": "^1.1.1",
-    "locklift": "broxus/ton-locklift",
     "eslint": "^8.5.0",
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.3",
@@ -42,7 +41,12 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-standard": "^5.0.0",
+    "everdev": "^1.1.1",
+    "locklift": "broxus/ton-locklift",
     "prettier": "^2.5.1",
     "prettier-plugin-solidity": "^1.0.0-beta.19"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
   }
 }

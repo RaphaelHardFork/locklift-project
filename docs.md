@@ -124,6 +124,33 @@ everdev contract deploy helloWorld
 everdev contract info helloWorld (check if deployed)
 ```
 
+# Use TONOS-CLI
+
+## Installation
+
+Follow the [installation guide](https://github.com/tonlabs/tonos-cli#install-through-everdev)
+
+Check installation:
+
+```zsh
+tonos-cli version
+```
+
+## Create key file
+
+```zsh
+tonos-cli genphrase
+tonos-cli getkeypair yourFile.json "seed phrase"
+
+cat yourFile.json (to check public/secret)
+```
+
+Set the path in the tonos-cli config
+
+```zsh
+tonos-cli config --keys yourFile.json
+```
+
 # Interact with Everscale on the front-end part
 
 https://github.com/EverscaleGuild/everscale-tutor-web

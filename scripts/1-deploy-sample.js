@@ -5,6 +5,9 @@ async function main() {
   const Wallet = await locklift.factory.getContract('TokenWallet')
   const [keyPair] = await locklift.keys.getKeyPairs()
 
+  console.log(keyPair)
+
+  // process.exit(0)
   const token = await locklift.giver.deployContract({
     contract: Token,
     initParams: {

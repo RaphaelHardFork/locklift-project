@@ -1,4 +1,4 @@
-pragma ton-solidity ^0.58.2;
+pragma ton-solidity >=0.58.2;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
@@ -26,7 +26,7 @@ contract Sample {
         return state;
     }
 
-    function viewTvmCell() external view returns (TvmCell) {
+    function viewTvmCell() external pure returns (TvmCell) {
         TvmCell cell;
         return cell;
     }
