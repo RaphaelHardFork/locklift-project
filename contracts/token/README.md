@@ -75,7 +75,7 @@ Try `deployWalletWithBalance`, before you need to topup the contract with `everd
 
 **PROBLEM:** The contract state doesn't change when calling this function.
 
-# Deploy with help of `tonos-cli`
+# Others deployment method
 
 _Network and signer are set by default on the testnet_
 
@@ -177,5 +177,94 @@ The balance should be 65000.
 ## Make a transfer
 
 ```zsh
+ everdev c run -s SignerName -a $wallet_address /TokenWallet
+```
 
+```zsh
+Available functions:
+
+  1) constructor
+  2) accept
+  3) getBalance
+  4) transferToRecipient
+  5) internalTransfer
+  6) getExpectedAddress
+  7) balance
+
+  Select function (number): 4
+
+Parameters of transferToRecipient:
+
+  _recipient_public_key (uint256): 0x7d7fa2970018e698eaad375f221f67262fde10b228eaf3d173a29977bfc7c52a
+  _tokens (uint128): 30000
+  _deploy_evers (uint128): 100000000
+  _transfer_evers (uint128): 100000000
+```
+
+Don't forget to topup the contract, the method check if `address(this).balance > _deploy_evers + _transfer_evers`
+
+> Public key must prefixed by `0x`
+
+## Check the transfer result
+
+There the smart contract for the recipient is created on the fly, here to get the address:
+
+```zsh
+everdev c run-local -a $wallet_address /TokenWallet
+```
+
+And use `getExpectedAddress`
+
+```zsh
+Available functions:
+
+  1) constructor
+  2) accept
+  3) getBalance
+  4) transferToRecipient
+  5) internalTransfer
+  6) getExpectedAddress
+  7) balance
+
+  Select function (number): 6
+
+Parameters of getExpectedAddress:
+
+  _wallet_public_key (uint256): 0x7d7fa2970018e698eaad375f221f67262fde10b228eaf3d173a29977bfc7c52a
+
+Execution has finished with result:
+{
+    "output": {
+        "value0": "0:88f0ca324821fa75a184c15ec3b3df3c045b50163b3da0032efa1ea8abc17891"
+    },
+    "out_messages": []
+}
+```
+
+Then you can check the balance of this wallet:
+
+```zsh
+everdev c run-local -a 0:88f0ca324821fa75a184c15ec3b3df3c045b50163b3da0032efa1ea8abc17891 /TokenWallet
+```
+
+```zsh
+Available functions:
+
+  1) constructor
+  2) accept
+  3) getBalance
+  4) transferToRecipient
+  5) internalTransfer
+  6) getExpectedAddress
+  7) balance
+
+  Select function (number): 7
+
+Execution has finished with result:
+{
+    "output": {
+        "balance": "30000"
+    },
+    "out_messages": []
+}
 ```
