@@ -208,3 +208,17 @@ tonos-cli config --keys yourFile.json
 # Interact with Everscale on the front-end part
 
 https://github.com/EverscaleGuild/everscale-tutor-web
+
+# Use TonClient (JS SDK)
+
+Here the [TonClient](https://github.com/tonlabs/ever-sdk-js) documentation
+
+In this [code exemple](https://github.com/mnill/everscale-account-decode-example/blob/master/test.js), TonClient is used to decode the contract and get `tvm.pubkey()`.
+
+An other way to get this information from a contract is to implement a getter function:
+
+```js
+function getOwner() external view returns ( uint256 ) {
+  return tvm.pubkey();
+}
+```
