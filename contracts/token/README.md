@@ -116,7 +116,7 @@ Get the wallet address in the output (`value0`) and save it:
 wallet_address=0:8a0bbb3e0989c99c7e4be3d4be5db1d9d44149b9a2276646876e2a0e8352f364
 ```
 
-## Use the Wallet
+### Use the Wallet
 
 Check if the contract is deployed:
 
@@ -132,7 +132,7 @@ everdev contract run-local build/TokenWallet -a $wallet_address
 
 The balance should be 65000.
 
-## Make a transfer
+### Make a transfer
 
 ```zsh
  everdev c run -s SignerName -a $wallet_address build/TokenWallet
@@ -163,7 +163,7 @@ Don't forget to topup the contract, the method check if `address(this).balance >
 
 > Public key must prefixed by `0x`
 
-## Check the transfer result
+### Check the transfer result
 
 There the smart contract for the recipient is created on the fly, here to get the address:
 
