@@ -9,7 +9,7 @@ _[Locklift](https://github.com/broxus/ton-locklift) project from a proposed [tem
 - [everdev](https://github.com/tonlabs/everdev#installation)
 - [locklift](https://github.com/broxus/ton-locklift) installed
 
-## Commandes
+## Commands
 
 Change compiler version:
 
@@ -37,7 +37,7 @@ You can change these command in `package.json`
 
 # Use Locklift
 
-Follow the [README](https://github.com/broxus/ton-locklift) to install locklift
+Description of the locklift API in their [README](https://github.com/broxus/ton-locklift).
 
 ## Example of `locklift.config.js`
 
