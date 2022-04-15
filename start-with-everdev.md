@@ -16,7 +16,7 @@ Solidity compiler (last 0.58.2): https://github.com/tonlabs/TON-Solidity-Compile
 
 VSCode extension for TON-Solidity: https://marketplace.visualstudio.com/items?itemName=everscale.solidity-support
 
-Guide to Ton development: https://mnill.github.io/everscale-for-solidity-dev/
+Guide to Ton development: https://mnill.github.io/everscale-for-solidity-dev/ **(Highly recommanded to understand well notions in this guide if you start developping on Everscale)**
 
 ## Everdev
 
@@ -205,10 +205,6 @@ Set the path in the tonos-cli config
 tonos-cli config --keys yourFile.json
 ```
 
-# Interact with Everscale on the front-end part
-
-https://github.com/EverscaleGuild/everscale-tutor-web
-
 # Use TonClient (JS SDK)
 
 Here the [TonClient](https://github.com/tonlabs/ever-sdk-js) documentation
@@ -222,3 +218,11 @@ function getOwner() external view returns ( uint256 ) {
   return tvm.pubkey();
 }
 ```
+
+# Interact with Everscale on the front-end part
+
+This repo create a web app with [Parcel](https://parceljs.org/): https://github.com/EverscaleGuild/everscale-tutor-web
+
+This repo took some part of the above repo to create a React app: https://github.com/RaphaelHardFork/everscale-react-dapp
+
+_These two exemple connect only with EVER wallet_

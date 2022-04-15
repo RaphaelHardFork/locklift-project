@@ -2,6 +2,11 @@
 
 _[Locklift](https://github.com/broxus/ton-locklift) project from a proposed [template](https://github.com/EverscaleGuild/locklift-sample)_
 
+In this repo:
+
+- [Start with everdev](https://github.com/RaphaelHardFork/locklift-project/blob/main/start-with-everdev.md)
+- [Deploy a token contract with `everdev cli`](https://github.com/RaphaelHardFork/locklift-project/tree/main/contracts/token)
+
 ## Requirements
 
 - [yarn](https://yarnpkg.com/getting-started/install)
