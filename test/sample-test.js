@@ -51,5 +51,22 @@ describe('Test Sample contract', async function () {
 
       expect(response.toNumber()).to.be.equal(111, 'Wrong state')
     })
+
+    it('send value from giver', async () => {
+      const amount = 200000000
+      const sampleBalance = await locklift.ton.getBalance(sample.address)
+      await locklift.giver.giver.run({
+        method: 'sendGrams',
+        params: {
+          dest: sample.address,
+          amount,
+        },
+      })
+
+      expect(
+        (await locklift.ton.getBalance(sample.address)).toString()
+      ).to.equal(sampleBalance.plus(499999).plus(amount).toString())
+      // 499999 are also send when using this method
+    })
   })
 })

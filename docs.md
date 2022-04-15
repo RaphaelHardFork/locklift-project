@@ -1,5 +1,23 @@
 # Start with EverScale
 
+## TVM ressources
+
+Exemple of smart contracts written for TVM:
+
+- https://github.com/broxus/ton-eth-bridge-token-contracts
+- https://github.com/tonlabs/samples/tree/master/solidity
+- https://github.com/broxus/ton-dex/tree/master/contracts
+
+Solidity API: https://github.com/tonlabs/TON-Solidity-Compiler/blob/master/API.md
+
+TVM description: https://test.ton.org/tvm.pdf
+
+Solidity compiler (last 0.58.2): https://github.com/tonlabs/TON-Solidity-Compiler
+
+VSCode extension for TON-Solidity: https://marketplace.visualstudio.com/items?itemName=everscale.solidity-support
+
+Guide to Ton development: https://mnill.github.io/everscale-for-solidity-dev/
+
 ## Everdev
 
 Here the [API](https://github.com/tonlabs/everdev) of `everdev`
@@ -25,9 +43,9 @@ everdev network add name endpoint
 
 endpoints:
 
-- local: http://localhost
-- testnet/devnet: net.ton.dev, net1.ton.dev, net5.ton.dev
-- mainnet: main.ton.dev, main2.ton.dev, main3.ton.dev
+- **local:** http://localhost
+- **testnet/devnet:** net.ton.dev, net1.ton.dev, net5.ton.dev
+- **mainnet:** main.ton.dev, main2.ton.dev, main3.ton.dev
 
 Add a signer:
 
@@ -39,7 +57,7 @@ Then you have to use a Giver, smart contract to deploy contract and send value.
 
 ## On local network
 
-There is a giver built-in (associated with a signer) in the local network:
+There are a givers built-in (associated with a signer) in the local network:
 
 The `se_giver_signer` will be the signer for the giver at address: `0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5`
 
@@ -49,7 +67,7 @@ everdev signer add se_giver_signer 172af540e43a524763dd53b26a066d472a97c4de37d54
 everdev network giver localNetworkName 0:b5e9240fc2d2f1ff8cbb1d1dee7fb7cae155e5f6320e585fcc685698994a19a5 -s se_giver_signer
 ```
 
-You can check signers and networks with `everdev s l` and `everdev n l`. And you can check commands with `everdev -h`, `everdev signer -h`, `everdev network add -h`, ...
+You can check signers and networks with `everdev s l` and `everdev n l`. And you can check every commands with `everdev -h`, `everdev signer -h`, `everdev network add -h`, ...
 
 Then you can follow the [quick start quide](https://github.com/tonlabs/everdev/blob/main/docs/quick_start.md).
 
@@ -104,7 +122,11 @@ Then you can set it as your giver for the testnet:
 everdev network giver testnetName 0:ab55eab6a... -s testnet_signer
 ```
 
-Try your giver by deploying `helloWorld` (from local quick start guide).
+Try your giver by deploying `helloWorld` (as in local quick start guide), so:
+
+- get the address
+- topup it
+- deploy it
 
 ```zsh
 everdev contract info helloWorld
@@ -126,7 +148,7 @@ everdev contract info helloWorld (check if deployed)
 
 ## Interact with the contract
 
-There are two way of interacting with the contract:
+There are **two way of interacting with the contract:**
 
 - `run`: execute method
 - `run-local`: read contract state
@@ -140,6 +162,8 @@ To work you need the ABI file, and parameters to get the address, so either:
 everdev contract run-local helloWorld -a 0:address...
 ```
 
+> You can call the constructor, but this is already called at the deployment, so it will produce an error: `exit code: 51 (Constructor was already called)`
+
 Try `5) timestamp`
 
 Then you can change this value by calling `touch`, as it's a write function you need to pass the `run` command:
@@ -152,11 +176,11 @@ Now you can see that the timestamp on the contract has change.
 
 # Use TONOS-CLI
 
-_For now I don't an improvment to use tonos-cli, I think it's better to focus on **locklift**_
+_Tonos-cli is another tool to interact with Everscale by command line. This is the more complete tool but it's only command line so we can't write script, doing unit tests. But it could be useful at some point, as locklift not cover some part of Everscale development._
 
 ## Installation
 
-Follow the [installation guide](https://github.com/tonlabs/tonos-cli#install-through-everdev)
+Follow the [installation guide](https://github.com/tonlabs/tonos-cli#install-through-everdev) (through Everdev)
 
 Check installation:
 

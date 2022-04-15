@@ -20,14 +20,11 @@
   "homepage": "https://github.com/EverscaleGuild/locklift-sample#readme",
   "scripts": {
     "nvm": "echo $npm_package_engines_node | cut -d'=' -f2",
-    "postinstall": "yarn everdev-setup",
     "local-reset": "everdev se reset",
     "everdev-setup": "everdev sol set --compiler 0.58.2 --linker 0.14.39",
-    "deploy-local": "locklift run --config locklift.config.js --network local --script scripts/1-deploy-sample.js",
-    "deploy-testnet": "locklift run --config locklift.config.js --network dev --script scripts/1-deploy-sample.js",
-    "contract-test": "yarn local-reset && locklift test --config locklift.config.js --network local",
+    "test": "yarn local-reset && locklift test --config locklift.config.js --network local",
     "compile": "locklift build --config locklift.config.js",
-    "test": "yarn contract-test"
+    "run-s": "locklift run --config locklift.config.js --script"
   },
   "engines": {
     "node": ">=16"

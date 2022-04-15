@@ -7,13 +7,9 @@ _[Locklift](https://github.com/broxus/ton-locklift) project from a proposed [tem
 - [yarn](https://yarnpkg.com/getting-started/install)
 - [docker](https://www.docker.com/get-started)
 - [everdev](https://github.com/tonlabs/everdev#installation)
+- [locklift](https://github.com/broxus/ton-locklift) installed
 
 ## Commandes
-
-```shell
-yarn compile
-yarn test
-```
 
 Change compiler version:
 
@@ -22,22 +18,22 @@ Change compiler version:
 "everdev-setup": "everdev sol set --compiler 0.58.2 --linker 0.14.39",
 ```
 
-## TVM ressources
+Compile and run tests:
 
-Exemple of smart contracts written for TVM:
+```zsh
+yarn compile
+yarn test
+```
 
-- https://github.com/broxus/ton-eth-bridge-token-contracts
-- https://github.com/tonlabs/samples/tree/master/solidity
+Run scripts
 
-Solidity API: https://github.com/tonlabs/TON-Solidity-Compiler/blob/master/API.md
+```zsh
+yarn run-s folder/file.js -n local|dev|networkName
+```
 
-TVM description: https://test.ton.org/tvm.pdf
+The network must be specified when using `run-s`
 
-Solidity compiler (last 0.58.2): https://github.com/tonlabs/TON-Solidity-Compiler
-
-VSCode extension for TON-Solidity: https://marketplace.visualstudio.com/items?itemName=everscale.solidity-support
-
-Guide to Ton development: https://mnill.github.io/everscale-for-solidity-dev/
+You can change these command in `package.json`
 
 # Use Locklift
 
@@ -131,15 +127,7 @@ module.exports = {
 };
 ```
 
-Commands can be added in the `package.json`:
-
-```json
-  "scripts": {
-    {...}
-    "compile": "locklift build --config locklift.config.js",
-    "test": "yarn contract-test"
-  },
-```
+_Locklift not support custom Giver ([GiverV2.sol](https://github.com/tonlabs/everdev/blob/main/docs/guides/work-with-devnet.md#compile-giver-code) for exemple)._
 
 ## Write contract
 
@@ -173,7 +161,25 @@ keyPair2 = keyList[1];
 keyPair3 = keyList[2];
 ```
 
-Get the public keypair as `uint`:
+`keyList` is got from the `locklift.config.js`:
+
+```js
+module.exports = {
+  {...},
+  networks: {
+    local: {
+      {...},
+      keys: {
+        phrase:
+          'canvas physical delay lend kitten film beauty board nerve scene arch upon',
+        amount: 5,
+      },
+    },
+  },
+};
+```
+
+Public keys are ofter put in arguments as uint:
 
 ```js
 const publicKeypair = `0x${keyPair.public}`;
@@ -182,16 +188,40 @@ const publicKeypair = `0x${keyPair.public}`;
 ### Deploy a contract
 
 ```js
-Contract = await locklift.factory.getContract("ContractName");
+Contract = await locklift.factory.getContract("ContractFileName"); // see in build folder
 
 contract = await locklift.giver.deployContract({
   contract: Token,
+  constructorParams: {},
   initParams: {
     wallet_code: Wallet.code,
   },
   keyPair,
 });
 ```
+
+Here the steps done by `deployContract`:
+
+- Derives the future contract address
+- Sends the specified amount of TONs to it's address
+- Waits till the balance is sufficient
+- Sends the contract deploy message
+
+### Send value from giver
+
+```js
+const amount = 200000000;
+
+await locklift.giver.giver.run({
+  method: "sendGrams",
+  params: {
+    dest: sample.address,
+    amount,
+  },
+});
+```
+
+_Whatever the amount, this method always send to the destination `499999` in addition to the amount._
 
 ### Read contract
 
@@ -245,6 +275,8 @@ const balance = (await locklift.ton.getBalance(contract.address)).toString();
 ### Test a revert
 
 There is no way to test a revert like with hardhat so you can use a `try/catch` statement:
+
+_Others methods should be used there to test a revert_
 
 ```js
 let message = "transaction passed";
@@ -324,7 +356,7 @@ await account.run({
 **SEND INTERNAL MESSAGE:**
 You can send internal message to contract with Account.sol, use the `.runTarget()` method.
 
-Problem: sometime doing a call with this method seem not affect the contract state
+**Problem:** if the internal call revert, you can't see it on tests.
 
 ```js
 await account.runTarget({
@@ -340,6 +372,8 @@ await account.runTarget({
   keyPair: keyPair,
 });
 ```
+
+To check the status of a transaction you can go on http://localhost/transactions
 
 ### Responsible functions
 
@@ -387,3 +421,14 @@ module.exports = {
   },
 };
 ```
+
+`.env` file:
+
+```zsh
+SEED_PHRASE="expose any bracket harsh couch neglect climb ignore ivory cancel area simple"
+SECRET=b373360846b7de322b30e3a027266c1473fdff9253b49f562153e6ba4090f893
+```
+
+As for the moment, we can't integrate custom Giver in the config, it's better to write unit test with locklift and then deploy using `everdev cli`.
+
+You can deploy with script on the testnet using a public giver, set on this `locklift.config.js` as the `dev` network.
