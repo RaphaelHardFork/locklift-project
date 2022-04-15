@@ -174,6 +174,8 @@ everdev contract run helloWorld -a:address...
 
 Now you can see that the timestamp on the contract has change.
 
+**[Deploy a more complexe contract with an exemple of token contract](https://github.com/RaphaelHardFork/locklift-project/tree/main/contracts/token)**
+
 # Use TONOS-CLI
 
 _Tonos-cli is another tool to interact with Everscale by command line. This is the more complete tool but it's only command line so we can't write script, doing unit tests. But it could be useful at some point, as locklift not cover some part of Everscale development._
